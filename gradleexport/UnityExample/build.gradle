@@ -1,0 +1,67 @@
+buildscript {
+	repositories {
+		google()
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'com.android.tools.build:gradle:3.4.0'
+	}
+}
+
+allprojects {
+   repositories {
+	   jcenter()
+	   google()
+      flatDir {
+        dirs 'libs'
+      }
+   }
+}
+
+apply plugin: 'com.android.application'
+
+dependencies {
+	compile fileTree(dir: 'libs', include: ['*.jar'])
+	compile(name: 'bugsnag-android-ndk-release', ext:'aar')
+	compile(name: 'bugsnag-android-release', ext:'aar')
+	compile(name: 'bugsnag-android-unity-release', ext:'aar')
+}
+
+android {
+	compileSdkVersion 29
+	buildToolsVersion '29.0.0'
+
+	defaultConfig {
+		targetSdkVersion 29
+		applicationId 'com.bugsnag.example.UnityExample'
+	}
+
+	lintOptions {
+		abortOnError false
+	}
+
+	aaptOptions {
+		noCompress '.unity3d', '.ress', '.resource', '.obb'
+	}
+
+	signingConfigs { release {
+		storeFile file('fakekeys.keystore')
+		storePassword 'password'
+		keyAlias 'password'
+		keyPassword 'password'
+	} }
+
+	buildTypes {
+		debug {
+			jniDebuggable true
+		}
+		release {
+			// Set minifyEnabled to true if you want to run ProGuard on your project
+			minifyEnabled true
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-unity.txt'
+			signingConfig signingConfigs.release
+		}
+	}
+
+}
